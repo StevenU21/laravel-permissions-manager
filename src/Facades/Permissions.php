@@ -2,8 +2,8 @@
 
 namespace Deifhelt\LaravelPermissionsManager\Facades;
 
-use Illuminate\Support\Facades\Facade;
 use Deifhelt\LaravelPermissionsManager\PermissionManager;
+use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \Antigravity\Permissions\PermissionManager

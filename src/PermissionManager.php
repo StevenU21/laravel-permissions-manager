@@ -9,8 +9,11 @@ use Illuminate\Support\Str;
 class PermissionManager
 {
     private Collection $permissions;
+
     private Collection $specialPermissions;
+
     private Collection $rolesDefinition;
+
     private const DEFAULT_ACTIONS = ['read', 'create', 'update', 'destroy'];
 
     public function __construct(array $permissions = [], array $specialPermissions = [])
@@ -31,6 +34,7 @@ class PermissionManager
     public function withRoles(array $rolesDefinition): self
     {
         $this->rolesDefinition = collect($rolesDefinition);
+
         return $this;
     }
 
@@ -40,7 +44,7 @@ class PermissionManager
     public function all(): array
     {
         return $this->buildPermissions()
-            ->flatMap(fn(Collection $actions) => $actions)
+            ->flatMap(fn (Collection $actions) => $actions)
             ->unique()
             ->values()
             ->all();
@@ -55,7 +59,7 @@ class PermissionManager
         $catalog = $allPermissions->flip();
 
         return $this->rolesDefinition
-            ->map(fn($definition) => $this->compileRolePermissions($definition, $catalog, $allPermissions)->all())
+            ->map(fn ($definition) => $this->compileRolePermissions($definition, $catalog, $allPermissions)->all())
             ->toArray();
     }
 
@@ -65,7 +69,7 @@ class PermissionManager
             $resource = is_numeric($key) ? (string) $value : (string) $key;
             $actions = is_numeric($key) ? collect(self::DEFAULT_ACTIONS) : collect(Arr::wrap($value));
 
-            $basePermissions = $actions->map(fn($action) => sprintf('%s %s', $action, $resource));
+            $basePermissions = $actions->map(fn ($action) => sprintf('%s %s', $action, $resource));
             $specials = collect($this->specialPermissions->get($resource, []))->filter();
 
             return [
@@ -87,17 +91,19 @@ class PermissionManager
         foreach ($normalized as $resource => $items) {
             // Implicit resource handling or direct permission names
             if (is_int($resource)) {
-                if ($catalog->has($items))
+                if ($catalog->has($items)) {
                     $permissions->push($items);
+                }
+
                 continue;
             }
 
             // Split items by space, comma or pipe if it's a string
             $actions = is_array($items) ? collect($items) : collect(preg_split('/[\s,|]+/', trim((string) $items)));
 
-            $actions->map(fn($item) => Str::contains($item, ' ') ? $item : sprintf('%s %s', $item, $resource))
-                ->filter(fn($p) => $catalog->has($p))
-                ->each(fn($p) => $permissions->push($p));
+            $actions->map(fn ($item) => Str::contains($item, ' ') ? $item : sprintf('%s %s', $item, $resource))
+                ->filter(fn ($p) => $catalog->has($p))
+                ->each(fn ($p) => $permissions->push($p));
         }
 
         return $permissions->unique()->values();

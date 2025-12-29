@@ -3,8 +3,8 @@
 namespace Deifhelt\LaravelPermissionsManager\Tests;
 
 use Deifhelt\LaravelPermissionsManager\PermissionManagerServiceProvider;
-use Spatie\Permission\PermissionServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\Permission\PermissionServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -33,7 +33,7 @@ class TestCase extends Orchestra
         ]);
 
         // Run migrations
-        $migration = include __DIR__ . '/../vendor/spatie/laravel-permission/database/migrations/create_permission_tables.php.stub';
+        $migration = include __DIR__.'/../vendor/spatie/laravel-permission/database/migrations/create_permission_tables.php.stub';
         $migration->up();
     }
 }

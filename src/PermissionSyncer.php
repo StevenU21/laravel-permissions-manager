@@ -18,7 +18,7 @@ class PermissionSyncer
 
         // 1. Bulk Insert/Update of Permissions (High Concurrency)
         $timestamp = now();
-        $upsertData = collect($flatPermissions)->map(fn($name) => [
+        $upsertData = collect($flatPermissions)->map(fn ($name) => [
             'name' => $name,
             'guard_name' => $guard,
             'created_at' => $timestamp,
@@ -26,7 +26,7 @@ class PermissionSyncer
         ])->toArray();
 
         // Single query for all permissions, ignores duplicates based on 'name' and 'guard_name'.
-        // Validates that 'updated_at' is updated (required by upsert syntax, effectively a no-op logic wise if we just want to ensure existence, 
+        // Validates that 'updated_at' is updated (required by upsert syntax, effectively a no-op logic wise if we just want to ensure existence,
         // but keeps timestamps fresh).
         Permission::upsert($upsertData, ['name', 'guard_name'], ['updated_at']);
 

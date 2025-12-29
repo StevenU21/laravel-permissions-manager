@@ -21,7 +21,7 @@ it('performs bulk inserts efficiently', function () {
     // 3. Monitor queries
     DB::enableQueryLog();
 
-    $syncer = new PermissionSyncer();
+    $syncer = new PermissionSyncer;
     $result = $syncer->execute($manager);
 
     $log = DB::getQueryLog();
@@ -30,7 +30,7 @@ it('performs bulk inserts efficiently', function () {
     // 1 query for upserting all permissions
     // 0 queries for roles (we defined none)
     // plus maybe some checks from Spatie package? strict upsert should be 1.
-    // However, depending on driver, upsert might be splitting chunks. 
+    // However, depending on driver, upsert might be splitting chunks.
     // SQLite might handle it differently, but we check it's O(1) conceptually, not O(N).
     // 4000 inserts one by one would be 4000 queries.
     // Bulk insert should be 1 or few.
@@ -44,14 +44,14 @@ it('syncs roles and permissions correctly', function () {
         'users' => ['view', 'edit'],
         'posts' => ['publish'],
     ])->withRoles([
-                'admin' => '*',
-                'editor' => [
-                    'users' => 'view',
-                    'posts' => 'publish'
-                ]
-            ]);
+        'admin' => '*',
+        'editor' => [
+            'users' => 'view',
+            'posts' => 'publish',
+        ],
+    ]);
 
-    $syncer = new PermissionSyncer();
+    $syncer = new PermissionSyncer;
     $result = $syncer->execute($manager);
 
     // Check Permissions

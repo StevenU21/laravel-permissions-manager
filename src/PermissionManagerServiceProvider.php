@@ -22,12 +22,12 @@ class PermissionManagerServiceProvider extends PackageServiceProvider
     public function packageRegistered()
     {
         // Singleton for the Manager (Builder)
-        $this->app->singleton(PermissionManager::class, fn() => new PermissionManager());
+        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);
 
         // Alias for Facade access
         $this->app->alias(PermissionManager::class, 'permissions');
 
         // Scoped/Singleton for the Syncer (stateless service usually, but singleton is fine)
-        $this->app->singleton(PermissionSyncer::class, fn() => new PermissionSyncer());
+        $this->app->singleton(PermissionSyncer::class, fn () => new PermissionSyncer);
     }
 }
