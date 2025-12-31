@@ -89,7 +89,7 @@ class PermissionManager
 
         $special = $this->specialPermissions->mapWithKeys(function ($value, $key) {
             $actions = collect($value);
-            return [$key => $actions->map(fn($action) => sprintf('%s %s', $action, $key))];
+            return [$key => $actions->map(fn($action) => Str::contains($action, ' ') ? $action : sprintf('%s %s', $action, $key))];
         });
 
         return $base->keys()->merge($special->keys())->unique()

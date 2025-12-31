@@ -2,7 +2,6 @@
 
 namespace Deifhelt\LaravelPermissionsManager;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Lang;
 
 class PermissionTranslator
