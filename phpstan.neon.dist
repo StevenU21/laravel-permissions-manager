@@ -1,0 +1,17 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - src
+        - config
+        - database
+    tmpDir: build/phpstan
+    checkOctaneCompatibility: true
+    checkModelProperties: true
+
+    ignoreErrors:
+        -
+            message: '#Trait Deifhelt\\LaravelPermissionsManager\\Traits\\HasPermissionCheck is used zero times and is not analysed.#'
+            path: src/Traits/HasPermissionCheck.php
