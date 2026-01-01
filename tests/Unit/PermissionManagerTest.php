@@ -105,9 +105,70 @@ it('returns permissions with labels in flattened format when requested', functio
 
     expect($result)->toBeArray();
     expect($result)->toHaveKey('create users');
-    // We expect translation, but since the Translator logic is complex (combining action + resource),
-    // and we are just checking the structure here, checking for the key is sufficient.
-    // However, let's check one value to be sure the mapping worked.
-    // 'create users' -> translated to "Create Users" ideally.
-    // But since the PermissionTranslator is static and uses real Lang, we mocking it slightly is enough.
+});
+
+it('groups permissions correctly for UI', function () {
+    $manager = PermissionManager::make(['users', 'posts']); // create users, etc.
+
+    // Mock permissions as objects (like Eloquent models)
+    $permissions = collect($manager->all())->map(function ($name, $index) {
+        return (object) ['id' => $index + 1, 'name' => $name];
+    });
+
+    // Mock translations
+    app('translator')->addLines([
+        'permissions.actions.create' => 'Create',
+    ], 'es', 'permissions');
+    app()->setLocale('es');
+
+    // Select "create users" (id corresponding to it)
+    $createUsersId = $permissions->firstWhere('name', 'create users')->id;
+
+    $groups = $manager->buildPermissionGroups($permissions, null, [$createUsersId]);
+
+    expect($groups)->toBeArray();
+
+    // Check "users" group
+    $usersGroup = collect($groups)->firstWhere('key', 'users');
+    expect($usersGroup)->not->toBeNull();
+    expect($usersGroup['title'])->toBe('Users');
+    expect($usersGroup['permissions'])->toBeArray();
+
+    // Check "create users" item
+    $createUsersItem = collect($usersGroup['permissions'])->firstWhere('name', 'create users');
+    expect($createUsersItem['checked'])->toBeTrue();
+    // expect($createUsersItem['label'])->toContain('Create'); // Translation check
+});
+
+it('handles dot notation grouping correctly', function () {
+    $manager = PermissionManager::make([]);
+
+    // Dot notation inputs
+    $permissions = collect([
+        (object) ['id' => 1, 'name' => 'users.create'],
+        (object) ['id' => 2, 'name' => 'users.view'],
+        (object) ['id' => 3, 'name' => 'products.list'],
+    ]);
+
+    $groups = $manager->buildPermissionGroups($permissions);
+
+    // Should have 'users' and 'products' groups
+    $usersGroup = collect($groups)->firstWhere('key', 'users');
+    expect($usersGroup)->not->toBeNull();
+    expect(collect($usersGroup['permissions']))->toHaveCount(2);
+
+    $productsGroup = collect($groups)->firstWhere('key', 'products');
+    expect($productsGroup)->not->toBeNull();
+});
+
+it('builds flat permission items list', function () {
+    $manager = PermissionManager::make(['users']);
+    $permissions = collect($manager->all())->map(function ($name, $i) {
+        return (object) ['id' => $i, 'name' => $name];
+    });
+
+    $items = $manager->buildPermissionItems($permissions);
+
+    expect($items)->toHaveCount(4); // CRUD
+    expect($items[0])->toHaveKeys(['id', 'name', 'label', 'labelSearch']);
 });

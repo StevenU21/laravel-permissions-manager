@@ -118,6 +118,117 @@ class PermissionManager
             });
     }
 
+    /**
+     * Build a grouped structure of permissions for UI (e.g. grouped checkboxes).
+     *
+     * @param iterable $permissions
+     * @param array|null $translatedPermissions
+     * @param array $selectedPermissionIds
+     * @return array
+     */
+    public function buildPermissionGroups(iterable $permissions, ?array $translatedPermissions = null, array $selectedPermissionIds = []): array
+    {
+        $permissionsCollection = collect($permissions);
+
+        if (is_null($translatedPermissions)) {
+            $translatedPermissions = $this->getPermissionsWithLabels(flatten: true);
+        }
+
+        // Ensure IDs are integers and valid
+        $selectedIds = collect($selectedPermissionIds)
+            ->map(fn($id) => (int) $id)
+            ->filter(fn($id) => $id > 0)
+            ->values()
+            ->all();
+
+        $grouped = $permissionsCollection
+            ->groupBy(fn($perm) => $this->getGroupName($perm->name ?? $perm)) // Handle objects or strings
+            ->sortKeys();
+
+        return $grouped
+            ->map(function ($permsGroup, $group) use ($translatedPermissions, $selectedIds) {
+                // Formatting group title: users -> Users, inventory_movements -> Inventory Movements
+                $title = Str::of($group)->replace(['_', '-'], ' ')->title()->toString();
+
+                $items = $permsGroup
+                    ->sortBy(fn($p) => $p->name ?? $p)
+                    ->map(function ($permission) use ($translatedPermissions, $selectedIds) {
+                        $name = $permission->name ?? $permission;
+                        $id = $permission->id ?? null;
+                        $label = $translatedPermissions[$name] ?? $name;
+
+                        return [
+                            'id' => $id,
+                            'name' => (string) $name,
+                            'label' => (string) $label,
+                            'labelSearch' => mb_strtolower((string) $label, 'UTF-8'),
+                            'checked' => !is_null($id) && in_array((int) $id, $selectedIds, true),
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                return [
+                    'key' => $group,
+                    'title' => $title,
+                    'permissions' => $items,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Build a flat list of permission items for UI (e.g. data tables).
+     *
+     * @param iterable $permissions
+     * @param array|null $translatedPermissions
+     * @return array
+     */
+    public function buildPermissionItems(iterable $permissions, ?array $translatedPermissions = null): array
+    {
+        $permissionsCollection = collect($permissions);
+
+        if (is_null($translatedPermissions)) {
+            $translatedPermissions = $this->getPermissionsWithLabels(flatten: true);
+        }
+
+        return $permissionsCollection
+            ->sortBy(fn($p) => $p->name ?? $p)
+            ->map(function ($permission) use ($translatedPermissions) {
+                $name = $permission->name ?? $permission;
+                $id = $permission->id ?? null;
+                $label = $translatedPermissions[$name] ?? $name;
+
+                return [
+                    'id' => $id,
+                    'name' => (string) $name,
+                    'label' => (string) $label,
+                    'labelSearch' => mb_strtolower((string) $label, 'UTF-8'),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Extract the group name (Resource) from a permission name.
+     */
+    protected function getGroupName(string $permissionName): string
+    {
+        // Dot notation: users.create -> users
+        if (Str::contains($permissionName, '.')) {
+            return Str::before($permissionName, '.');
+        }
+
+        // Space notation: create users -> users
+        if (Str::contains($permissionName, ' ')) {
+            return Str::after($permissionName, ' ');
+        }
+
+        return 'other';
+    }
+
     protected function compileRolePermissions($definition, Collection $catalog, Collection $allPermissions, Collection $structuredPermissions): Collection
     {
         if ($definition === '*' || (is_array($definition) && reset($definition) === '*')) {

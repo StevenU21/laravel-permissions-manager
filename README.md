@@ -214,10 +214,9 @@ class PostPolicy
 ## Documentation
 
 -   [Installation](docs/installation.md) - Complete setup guide including Laravel 11/12 middleware
--   [Configuration](docs/configuration.md) - Deep dive into permission strategies
--   [Translations](docs/translations.md) - Translate permissions automatically
--   [Usage](docs/usage.md) - Commands, guards, and seeders
--   [Policies](docs/policies.md) - Security patterns and trait usage
+-   [Configuration & Usage](docs/guide/README.md) - Deep dive into permissions, roles, and commands
+-   [Translations](docs/translations/README.md) - Translate permissions automatically
+-   [Policies](docs/policies/README.md) - Security patterns and trait usage
 
 ## License
 

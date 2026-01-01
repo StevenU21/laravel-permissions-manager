@@ -1,4 +1,4 @@
-# Permission Translations
+# Configuration
 
 The package includes a powerful translation engine that automatically converts technical permission names (e.g., `create users`) into human-readable labels (e.g., "Create Users" or "Crear Usuarios").
 
@@ -14,9 +14,7 @@ The translation system uses a **Composite Strategy**:
 
 This means you **don't** need to translate every single combination. Just translate your Actions and your Resources, and the system handles the rest.
 
-## Configuration
-
-### Publishing Translations
+## Publishing Translations
 
 To customize the translations, publish the language files to your application's `lang` directory:
 
@@ -29,7 +27,7 @@ This will create:
 -   `lang/vendor/permissions/en/permissions.php`
 -   `lang/vendor/permissions/es/permissions.php` (if available)
 
-### Defining Translations
+## Defining Translations
 
 Open the published file (e.g., `lang/vendor/permissions/es/permissions.php`) and define your terms.
 
@@ -65,67 +63,6 @@ With just the configuration above, the system can automatically translate:
 -   `export inventory_movements` -> "Exportar Movimientos de inventario"
 -   `destroy users` -> "Eliminar Usuarios"
 
-## Usage
-
-### In PHP (Controllers/Services)
-
-You can use the `Permissions` facade to get a list of all permissions with their translations, perfect for sending to a frontend (Vue, React, etc.).
-
-```php
-use Deifhelt\LaravelPermissionsManager\Facades\Permissions;
-
-public function index()
-{
-    // Returns a collection of permissions with 'name' and 'label'
-    $permissions = Permissions::getPermissionsWithLabels();
-
-    // Output structure (Default):
-    // [
-    //     ['name' => 'create users', 'label' => 'Crear Usuarios'],
-    //     ['name' => 'update products', 'label' => 'Editar Productos'],
-    // ]
-
-    // Returns a flattened key-value pair array (Ideal for Laravel Form Selects)
-    $options = Permissions::getPermissionsWithLabels(flatten: true);
-
-    // Output structure (Flattened):
-    // [
-    //     'create users' => 'Crear Usuarios',
-    //     'update products' => 'Editar Productos',
-    // ]
-
-    return response()->json($permissions);
-}
-```
-
-Or translate a specific string using the helper class:
-
-```php
-use Deifhelt\LaravelPermissionsManager\PermissionTranslator;
-
-$label = PermissionTranslator::translate('create users'); // "Crear Usuarios"
-```
-
-### In Blade Views
-
-If you need to display a permission label in a view:
-
-```blade
-@foreach(Permissions::getPermissionsWithLabels() as $permission)
-    <div class="form-check">
-        <input type="checkbox" name="permissions[]" value="{{ $permission['name'] }}">
-        <label>{{ $permission['label'] }}</label>
-    </div>
-@endforeach
-```
-
-Or using the standard translation helper (if you registered the keys manually, but `getPermissionsWithLabels` is recommended for dynamic lists):
-
-```blade
-{{-- This works via the native Laravel translator if keys exist --}}
-{{ trans('permissions::permissions.actions.create') }}
-```
-
 ## Localization & Multi-language Support
 
 The translation system **natively integrates with Laravel's Localization**. It automatically respects your application's locale configuration.
@@ -138,7 +75,7 @@ The translation system **natively integrates with Laravel's Localization**. It a
 
 You **do not need** any extra configuration in this package to enable multi-language support. Just ensure you have the corresponding translation files in `lang/vendor/permissions/{locale}/`.
 
-## Adding New Languages
+### Adding New Languages
 
 1.  Create a new folder in `lang/vendor/permissions/` (e.g., `fr` for French).
 2.  Copy the `permissions.php` file from another language.
