@@ -52,17 +52,23 @@ class PermissionManager
 
     /**
      * Get all permissions with their translated labels.
-     * 
-     * @return array<int, array{name: string, label: string}>
+     *
+     * @param bool $flatten If true, returns ['permission_name' => 'Label']. If false, returns [['name' => '...', 'label' => '...']].
+     * @return array
      */
-    public function getPermissionsWithLabels(): array
+    public function getPermissionsWithLabels(bool $flatten = false): array
     {
-        return collect($this->all())
+        $collection = collect($this->all())
             ->map(fn($permission) => [
                 'name' => $permission,
                 'label' => PermissionTranslator::translate($permission),
-            ])
-            ->all();
+            ]);
+
+        if ($flatten) {
+            return $collection->mapWithKeys(fn($item) => [$item['name'] => $item['label']])->all();
+        }
+
+        return $collection->all();
     }
 
     /**

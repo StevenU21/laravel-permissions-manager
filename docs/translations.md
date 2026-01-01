@@ -79,10 +79,19 @@ public function index()
     // Returns a collection of permissions with 'name' and 'label'
     $permissions = Permissions::getPermissionsWithLabels();
 
-    // Output structure:
+    // Output structure (Default):
     // [
     //     ['name' => 'create users', 'label' => 'Crear Usuarios'],
     //     ['name' => 'update products', 'label' => 'Editar Productos'],
+    // ]
+
+    // Returns a flattened key-value pair array (Ideal for Laravel Form Selects)
+    $options = Permissions::getPermissionsWithLabels(flatten: true);
+
+    // Output structure (Flattened):
+    // [
+    //     'create users' => 'Crear Usuarios',
+    //     'update products' => 'Editar Productos',
     // ]
 
     return response()->json($permissions);
