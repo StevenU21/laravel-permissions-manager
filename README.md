@@ -103,7 +103,10 @@ Define roles that bypass all permission checks (Super Admin). These roles are de
 'super_admin_role' => 'admin', // Can be a string or array: ['admin', 'root']
 ```
 
-**Note:** The `permissions:sync` command automatically creates these roles in the database for you. You don't need to define them in the `roles` array.
+**Note:**
+
+1.  The `permissions:sync` command automatically creates these roles in the database for you.
+2.  **Global Bypass**: This package registers a `Gate::before` callback. This ensures that `@can('any')`, `$user->can('any')`, and Policies automatically return `true` for these users, even if they have **0 permissions** in the database.
 
 ### Roles
 

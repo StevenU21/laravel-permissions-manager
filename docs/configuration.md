@@ -16,7 +16,15 @@ The `super_admin_role` configuration key defines roles that bypass **all** permi
 'super_admin_role' => ['admin', 'root', 'super-admin'],
 ```
 
-> **Note**: These roles do not need to be defined in the `roles` array below. They automatically pass all checks via the `HasPermissionCheck` trait.
+> **Note**: These roles do not need to be defined in the `roles` array below.
+>
+> **Important behaviors:**
+>
+> 1.  **Auto-Creation**: The system **automatically creates** these roles in the database when you run `permissions:sync`.
+> 2.  **Global Bypass**: The package registers a `Gate::before` callback. This means:
+>     -   `@can('any_permission')` in Blade **WORKS**.
+>     -   `$user->can('any_permission')` **WORKS**.
+>     -   Database permissions are **NOT required** for these users. The system approves them instantly in memory.
 
 ---
 

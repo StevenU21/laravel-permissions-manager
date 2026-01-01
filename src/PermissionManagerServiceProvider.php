@@ -4,6 +4,7 @@ namespace Deifhelt\LaravelPermissionsManager;
 
 use Illuminate\Support\ServiceProvider;
 use Deifhelt\LaravelPermissionsManager\Commands\LaravelPermissionsManagerCommand;
+use Illuminate\Support\Facades\Gate;
 
 class PermissionManagerServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,21 @@ class PermissionManagerServiceProvider extends ServiceProvider
                 LaravelPermissionsManagerCommand::class,
             ]);
         }
+
+        // Global Super Admin Bypass
+        // This ensures @can() and $user->can() work without DB permissions
+        Gate::before(function ($user, $ability) {
+            $superAdminConfig = config('permissions.super_admin_role', 'admin');
+            $superAdminRoles = is_array($superAdminConfig) ? $superAdminConfig : [$superAdminConfig];
+
+            if (method_exists($user, 'hasRole')) {
+                foreach ($superAdminRoles as $role) {
+                    if ($user->hasRole($role)) {
+                        return true;
+                    }
+                }
+            }
+        });
     }
 
     public function register()
