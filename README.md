@@ -138,12 +138,18 @@ php artisan vendor:publish --tag=permissions-translations
 
 Then use in your code:
 
+````php
+use Deifhelt\LaravelPermissionsManager\Facades\Permissions;
+
 ```php
 use Deifhelt\LaravelPermissionsManager\Facades\Permissions;
 
 // Returns ['name' => 'create users', 'label' => 'Crear Usuarios']
 $all = Permissions::getPermissionsWithLabels();
-```
+
+// Translate a single permission
+echo Permissions::translate('create users');
+````
 
 See [Translations Documentation](docs/translations.md) for full details.
 

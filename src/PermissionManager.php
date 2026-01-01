@@ -66,6 +66,15 @@ class PermissionManager
     }
 
     /**
+     * Translate a single permission string.
+     * Proxy for PermissionTranslator.
+     */
+    public function translate(string $permission): string
+    {
+        return PermissionTranslator::translate($permission);
+    }
+
+    /**
      * Maps roles with their respective permission names.
      */
     public function getRolesWithPermissions(): array

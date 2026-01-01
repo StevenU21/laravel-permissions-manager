@@ -14,3 +14,13 @@ it('resolves the correct class from the facade', function () {
 
     expect($manager)->toBeInstanceOf(PermissionManager::class);
 });
+
+it('proxies the translate method correctly', function () {
+    // This confirms the new Permissions::translate() method works
+    // We expect it to return a string (either the translation or the key itself)
+    $result = Permissions::translate('create users');
+
+    expect($result)->toBeString();
+    // Default fallback is the key, unless translations are loaded
+    expect($result)->not->toBeEmpty();
+});
