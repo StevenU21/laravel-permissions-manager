@@ -23,7 +23,8 @@ class PermissionTranslatorTest extends TestCase
             'permissions.resources.inventory_movements' => 'Movimientos de inventario',
 
             'permissions.dictionary.old_resource' => 'Recurso Viejo',
-        ], 'es');
+            'permissions.dictionary.products' => 'Productos',
+        ], 'es', 'permissions');
 
         app()->setLocale('es');
     }
@@ -43,7 +44,7 @@ class PermissionTranslatorTest extends TestCase
     #[Test]
     public function it_falls_back_to_token_translation_if_resource_not_defined()
     {
-        app('translator')->addLines(['permissions.dictionary.products' => 'Productos'], 'es');
+        app('translator')->addLines(['permissions.dictionary.products' => 'Productos'], 'es', 'permissions');
 
         $this->assertEquals('Crear Productos', PermissionTranslator::translate('create products'));
     }

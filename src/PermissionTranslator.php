@@ -16,20 +16,20 @@ class PermissionTranslator
         $normalized = str_replace(['.', '-', ':', '/'], ' ', $normalized);
         $normalized = preg_replace('/\s+/', ' ', $normalized);
 
-        if (Lang::has("permissions.special.{$normalized}")) {
-            return trans("permissions.special.{$normalized}");
+        if (Lang::has("permissions::permissions.special.{$normalized}")) {
+            return trans("permissions::permissions.special.{$normalized}");
         }
-        if (Lang::has("permissions.dictionary.{$normalized}")) {
-            return trans("permissions.dictionary.{$normalized}");
+        if (Lang::has("permissions::permissions.dictionary.{$normalized}")) {
+            return trans("permissions::permissions.dictionary.{$normalized}");
         }
 
         $parts = explode(' ', $normalized);
 
         if (count($parts) < 2) {
-            return Lang::has("permissions.actions.{$normalized}")
-                ? trans("permissions.actions.{$normalized}")
-                : (Lang::has("permissions.resources.{$normalized}")
-                    ? trans("permissions.resources.{$normalized}")
+            return Lang::has("permissions::permissions.actions.{$normalized}")
+                ? trans("permissions::permissions.actions.{$normalized}")
+                : (Lang::has("permissions::permissions.resources.{$normalized}")
+                    ? trans("permissions::permissions.resources.{$normalized}")
                     : $original);
         }
 
@@ -58,11 +58,11 @@ class PermissionTranslator
 
     protected static function translateAction(string $action): string
     {
-        if (Lang::has("permissions.actions.{$action}")) {
-            return trans("permissions.actions.{$action}");
+        if (Lang::has("permissions::permissions.actions.{$action}")) {
+            return trans("permissions::permissions.actions.{$action}");
         }
-        if (Lang::has("permissions.dictionary.{$action}")) {
-            return trans("permissions.dictionary.{$action}");
+        if (Lang::has("permissions::permissions.dictionary.{$action}")) {
+            return trans("permissions::permissions.dictionary.{$action}");
         }
 
         return $action;
@@ -70,11 +70,11 @@ class PermissionTranslator
 
     protected static function translateResource(string $resource): string
     {
-        if (Lang::has("permissions.resources.{$resource}")) {
-            return trans("permissions.resources.{$resource}");
+        if (Lang::has("permissions::permissions.resources.{$resource}")) {
+            return trans("permissions::permissions.resources.{$resource}");
         }
-        if (Lang::has("permissions.dictionary.{$resource}")) {
-            return trans("permissions.dictionary.{$resource}");
+        if (Lang::has("permissions::permissions.dictionary.{$resource}")) {
+            return trans("permissions::permissions.dictionary.{$resource}");
         }
 
         return self::translateResourceTokens($resource);
@@ -90,10 +90,10 @@ class PermissionTranslator
 
         foreach ($tokens as $token) {
             $trans = $token;
-            if (Lang::has("permissions.resources.{$token}")) {
-                $trans = trans("permissions.resources.{$token}");
-            } elseif (Lang::has("permissions.dictionary.{$token}")) {
-                $trans = trans("permissions.dictionary.{$token}");
+            if (Lang::has("permissions::permissions.resources.{$token}")) {
+                $trans = trans("permissions::permissions.resources.{$token}");
+            } elseif (Lang::has("permissions::permissions.dictionary.{$token}")) {
+                $trans = trans("permissions::permissions.dictionary.{$token}");
             }
             $translatedTokens[] = $trans;
         }
